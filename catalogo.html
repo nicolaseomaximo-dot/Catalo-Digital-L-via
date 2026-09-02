@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cotara — Catálogo de Produtos Naturais</title>
+<style>
+  :root{
+    --verde-profundo:#2D6A4F;
+    --verde-sabvia:#74C69D;
+    --off-white:#F8F6F1;
+    --terracota:#C77D5A;
+    --texto:#1B4332;
+    --sombra:0 8px 30px rgba(27,67,50,.10);
+    --sombra-hover:0 16px 40px rgba(27,67,50,.18);
+    --raio:18px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--off-white);color:var(--texto);overflow-x:hidden;}
+
+  header{background:linear-gradient(135deg,var(--verde-profundo) 0%,#3d8a68 50%,var(--verde-sabvia) 100%);color:#fff;text-align:center;padding:48px 20px;position:relative;overflow:hidden;}
+  header::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.12),transparent 60%);animation:brilho 8s ease-in-out infinite;}
+  @keyframes brilho{0%,100%{opacity:.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-10px)}}
+  header h1{font-size:2.4rem;letter-spacing:1px;position:relative;animation:desce .6s ease-out;}
+  header p{margin-top:8px;font-size:1.05rem;opacity:.95;position:relative;animation:desce .6s .1s ease-out both;}
+  @keyframes desce{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+
+  .container{max-width:1200px;margin:0 auto;padding:20px;}
+  .controles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:24px 0;}
+  #busca{flex:1;min-width:240px;max-width:480px;padding:13px 18px;border:2px solid var(--verde-sabvia);border-radius:30px;font-size:1rem;outline:none;transition:.3s;background:#fff;box-shadow:var(--sombra);}
+  #busca:focus{border-color:var(--verde-profundo);box-shadow:0 0 0 4px rgba(116,198,157,.25);transform:scale(1.01);}
+
+  .filtro-toggle{display:block;width:100%;max-width:480px;margin:0 auto 12px;padding:14px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;transition:.3s;text-align:center;box-shadow:var(--sombra);}
+  .filtro-toggle:hover{transform:translateY(-2px);box-shadow:var(--sombra-hover);}
+  .filtro-toggle:active{transform:scale(.97);}
+  .filtro-painel{max-width:480px;margin:0 auto 24px;background:#fff;border:2px solid var(--verde-sabvia);border-radius:16px;padding:18px;max-height:0;overflow:hidden;opacity:0;transform:translateY(-10px);transition:max-height .4s ease,opacity .3s ease,transform .3s ease;}
+  .filtro-painel.aberto{max-height:600px;opacity:1;transform:translateY(0);}
+  .filtro-grupo{margin-bottom:16px;}
+  .filtro-grupo:last-child{margin-bottom:0;}
+  .filtro-grupo h4{font-size:.85rem;color:var(--terracota);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+  .filtro-opcoes{display:flex;flex-wrap:wrap;gap:6px;}
+  .f-opcao{padding:7px 13px;border:2px solid var(--verde-sabvia);border-radius:20px;background:#fff;cursor:pointer;font-size:.82rem;color:var(--texto);transition:.25s;position:relative;overflow:hidden;}
+  .f-opcao.ativo,.f-opcao:hover{background:var(--verde-profundo);color:#fff;border-color:var(--verde-profundo);transform:translateY(-1px);}
+  .f-limpar{display:block;width:100%;margin-top:14px;padding:10px;border:2px solid var(--terracota);border-radius:10px;background:#fff;color:var(--terracota);font-weight:700;cursor:pointer;transition:.25s;font-size:.85rem;}
+  .f-limpar:hover{background:var(--terracota);color:#fff;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;}
+  .card{background:#fff;border-radius:var(--raio);overflow:hidden;box-shadow:var(--sombra);display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;opacity:0;transform:translateY(24px);animation:entra .5s ease-out forwards;position:relative;}
+  @keyframes entra{to{opacity:1;transform:translateY(0)}}
+  .card:hover{transform:translateY(-6px);box-shadow:var(--sombra-hover);}
+  .card .img-wrap{overflow:hidden;position:relative;height:230px;background:var(--off-white);}
+  .card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+  .card:hover img{transform:scale(1.08);}
+  .card .cat-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);color:var(--verde-profundo);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+  .card .info{padding:16px;display:flex;flex-direction:column;flex:1;}
+  .card h3{font-size:1.05rem;margin-bottom:6px;color:var(--verde-profundo);}
+  .card .doencas{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+  .card .doenca-tag{font-size:.68rem;background:var(--off-white);color:var(--verde-profundo);border:1px solid var(--verde-sabvia);padding:2px 8px;border-radius:12px;}
+  .card p{font-size:.88rem;color:#4a5d52;line-height:1.45;flex:1;}
+  .botoes{display:flex;gap:8px;margin-top:14px;}
+  .btn{flex:1;text-align:center;text-decoration:none;padding:11px 8px;border-radius:12px;font-size:.85rem;font-weight:600;transition:.25s;cursor:pointer;border:none;position:relative;overflow:hidden;}
+  .btn1{background:var(--verde-profundo);color:#fff;}
+  .btn1:hover{background:#245a43;transform:translateY(-2px);box-shadow:0 6px 16px rgba(45,106,79,.35);}
+  .btn-add{background:var(--verde-sabvia);color:var(--texto);}
+  .btn-add:hover{background:#5fb58a;transform:translateY(-2px);box-shadow:0 6px 16px rgba(116,198,157,.4);}
+  .btn:active{transform:scale(.94);}
+
+  .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .5s linear;pointer-events:none;}
+  @keyframes ripple{to{transform:scale(4);opacity:0}}
+
+  footer{text-align:center;padding:30px 20px;color:#6b7a72;font-size:.9rem;}
+  .vazio{text-align:center;padding:40px;color:#6b7a72;display:none;}
+
+  .cart-fab{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(27,67,50,.35);cursor:pointer;z-index:100;border:none;transition:transform .25s;animation:sobe .6s .3s ease-out both;}
+  @keyframes sobe{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+  .cart-fab:hover{transform:scale(1.1) rotate(-4deg);}
+  .cart-fab:active{transform:scale(.9);}
+  .cart-fab .badge{position:absolute;top:-4px;right:-4px;background:var(--terracota);color:#fff;font-size:.75rem;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;transition:transform .2s;}
+  .cart-fab .badge.pula{animation:pula .4s ease;}
+  @keyframes pula{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+
+  .cart-overlay{position:fixed;inset:0;background:rgba(27,67,50,.5);opacity:0;visibility:hidden;transition:.3s;z-index:200;backdrop-filter:blur(2px);}
+  .cart-overlay.aberto{opacity:1;visibility:visible;}
+  .cart-panel{position:fixed;top:0;right:0;height:100%;width:100%;max-width:420px;background:#fff;box-shadow:-8px 0 30px rgba(0,0,0,.2);transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:201;display:flex;flex-direction:column;}
+  .cart-panel.aberto{transform:translateX(0);}
+  .cart-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;}
+  .cart-head h2{font-size:1.2rem;}
+  .cart-close{background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1;transition:transform .2s;}
+  .cart-close:hover{transform:rotate(90deg);}
+  .cart-items{flex:1;overflow-y:auto;padding:16px 20px;}
+  .cart-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eee;animation:entra .3s ease-out both;}
+  .cart-item img{width:52px;height:52px;object-fit:cover;border-radius:10px;}
+  .cart-item .ci-info{flex:1;}
+  .cart-item .ci-nome{font-size:.9rem;font-weight:600;color:var(--verde-profundo);}
+  .cart-item .ci-qtd{display:flex;align-items:center;gap:8px;margin-top:6px;}
+  .ci-qtd button{width:26px;height:26px;border-radius:8px;border:1px solid var(--verde-sabvia);background:#fff;cursor:pointer;font-weight:700;color:var(--verde-profundo);transition:.2s;}
+  .ci-qtd button:hover{background:var(--verde-sabvia);}
+  .ci-qtd button:active{transform:scale(.85);}
+  .ci-qtd span{min-width:20px;text-align:center;font-weight:600;}
+  .ci-remove{background:none;border:none;color:var(--terracota);font-size:1.2rem;cursor:pointer;transition:.2s;}
+  .ci-remove:hover{transform:scale(1.2);}
+  .cart-vazio{text-align:center;color:#6b7a72;padding:40px 0;}
+  .cart-foot{padding:18px 20px;border-top:1px solid #eee;background:var(--off-white);}
+  .cart-total{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;margin-bottom:12px;color:var(--texto);}
+  .cart-checkout{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:.25s;position:relative;overflow:hidden;}
+  .cart-checkout:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(45,106,79,.35);}
+  .cart-checkout:active{transform:scale(.97);}
+  .cart-checkout:disabled{background:#b8c9c0;cursor:not-allowed;transform:none;box-shadow:none;}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde-profundo);color:#fff;padding:14px 24px;border-radius:14px;font-size:.9rem;font-weight:600;box-shadow:0 10px 30px rgba(27,67,50,.4);opacity:0;transition:.4s cubic-bezier(.2,.8,.2,1);z-index:300;display:flex;align-items:center;gap:8px;pointer-events:none;}
+  .toast.mostrar{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🌿 Cotara</h1>
+  <p>Produtos naturais e fitoterápicos selecionados</p>
+</header>
+
+<div class="container">
+  <div class="controles">
+    <input type="text" id="busca" placeholder="🔍 Buscar produto...">
+  </div>
+
+  <button class="filtro-toggle" id="filtroToggle">⚙️ Filtros e Ordenação</button>
+
+  <div class="filtro-painel" id="filtroPainel">
+    <div class="filtro-grupo">
+      <h4>Ordenar por</h4>
+      <div class="filtro-opcoes" id="filtroOrdem">
+        <button class="f-opcao" data-ordem="az">A → Z</button>
+        <button class="f-opcao" data-ordem="za">Z → A</button>
+      </div>
+    </div>
+    <div class="filtro-grupo">
+      <h4>Tipo de produto</h4>
+      <div class="filtro-opcoes" id="filtroTipo"></div>
+    </div>
+    <div class="filtro-grupo">
+      <h4>Doenças / Áreas do corpo</h4>
+      <div class="filtro-opcoes" id="filtroDoenca"></div>
+    </div>
+    <button class="f-limpar" id="filtroLimpar">Limpar filtros</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+  <div class="vazio" id="vazio">Nenhum produto encontrado.</div>
+</div>
+
+<footer>
+  Cotara — Produtos Naturais · Peça pelo WhatsApp e receba em casa 🌿
+</footer>
+
+<button class="cart-fab" id="cartFab" title="Ver carrinho">🛒<span class="badge" id="cartBadge">0</span></button>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-panel" id="cartPanel">
+  <div class="cart-head">
+    <h2>🛒 Seu carrinho</h2>
+    <button class="cart-close" id="cartClose">×</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-foot">
+    <div class="cart-total"><span>Total de itens</span><span id="cartTotal">0</span></div>
+    <button class="cart-checkout" id="cartCheckout" disabled>Finalizar pedido no WhatsApp</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast">✅ Produto adicionado ao carrinho!</div>
+
+<script>
+// ✅ NÚMERO DE WHATSAPP PADRÃO (com DDI 55 e DDD, sem espaços)
+const WHATSAPP = "5562984803759"; // 55 (62) 98480-3759
+
+const produtos = [
+  {nome:"Açafrão 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Curcuma longa, não alcoólico.", img:"imagens/acafrao.png", doencas:["Anti-inflamatório","Digestão"]},
+  {nome:"Agoniada 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Plumeria lancifolia, não alcoólico.", img:"imagens/agoniada.png", doencas:["Estômago","Digestão"]},
+  {nome:"Alcachofra 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Cynara scolymus, não alcoólico.", img:"imagens/alcachofra.png", doencas:["Fígado","Colesterol"]},
+  {nome:"Alcaçuz 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Glycyrrhiza glabra, não alcoólico.", img:"imagens/alcacuz.png", doencas:["Estômago","Garganta"]},
+  {nome:"Antiparasitário Natural 30ml", cat:"Extratos", desc:"Auxilia no equilíbrio contra parasitas internos. 100% natural, vegano.", img:"imagens/antiparasita.png", doencas:["Intestino"]},
+  {nome:"Artemisia 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/artemisia.png", doencas:["Intestino"]},
+  {nome:"Assa-Peixe 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/assa-peixe.png", doencas:["Respiratório"]},
+  {nome:"Bálsamo Labial", cat:"Cuidados", desc:"Hidrata e protege os lábios.", img:"imagens/balsamo_labial.png", doencas:["Pele"]},
+  {nome:"Bio Creme Restaurador 100g", cat:"Cuidados", desc:"Creme restaurador natural.", img:"imagens/biocreme.png", doencas:["Pele"]},
+  {nome:"Boa Noite Plus 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/boa_noite_plus.png", doencas:["Sono","Ansiedade"]},
+  {nome:"Cana do Brejo 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/cana_do_brejo.png", doencas:["Rins","Bexiga"]},
+  {nome:"Canela de Velho 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/canela_de_velho.png", doencas:["Diabetes","Rins"]},
+  {nome:"Cardo Mariano 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/cardo_mariano.png", doencas:["Fígado"]},
+  {nome:"Carvão Vegetal Ativado 250g", cat:"Cuidados", desc:"Carvão ativado da casca de coco. Desintoxica, filtra e absorve odores.", img:"imagens/carvao_ativado_em_po.png", doencas:["Intestino","Pele"]},
+  {nome:"Carqueja 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/carqueja.png", doencas:["Digestão","Diabetes"]},
+  {nome:"Coentro 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/coentro.png", doencas:["Digestão","Colesterol"]},
+  {nome:"Dente de Leão 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Taraxacum officinale, não alcoólico.", img:"imagens/dente_e_leao.png", doencas:["Fígado","Rins"]},
+  {nome:"Desodorante Ginger & Tea Tree 70g", cat:"Cuidados", desc:"Desodorante natural. Bactericida, não mancha, 100% vegano, sem alumínio.", img:"imagens/desodorante_ginger.png", doencas:["Cuidados Pessoais"]},
+  {nome:"Desodorante Mint & Grape 70g", cat:"Cuidados", desc:"Desodorante natural com aroma de hortelã e uva. 100% vegano, sem alumínio.", img:"imagens/desodorante_mint.png", doencas:["Cuidados Pessoais"]},
+  {nome:"Equinácea 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/equinacea.png", doencas:["Imunidade"]},
+  {nome:"Erva Baleeira 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/erva_baleeira.png", doencas:["Anti-inflamatório","Dores"]},
+  {nome:"Erva Botão 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/erva_botao.png", doencas:["Estômago","Digestão"]},
+  {nome:"Espinheira Santa 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/espinheira_santa.png", doencas:["Estômago","Gastrite"]},
+  {nome:"Espinheiro Branco 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/espinheiro_branco.png", doencas:["Coração","Pressão"]},
+  {nome:"Folha de Amora 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/folha_de_amora.png", doencas:["Diabetes","Feminino"]},
+  {nome:"Folha de Graviola 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/folha_de_graviola.png", doencas:["Imunidade","Relaxamento"]},
+  {nome:"Folha de Oliveira 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Olea europaea, não alcoólico.", img:"imagens/folha_de_oliveira.png", doencas:["Pressão","Coração"]},
+  {nome:"Garra D 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/garra_D.png", doencas:["Anti-inflamatório","Dores"]},
+  {nome:"Ginkgo Biloba 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/ginko_biloba.png", doencas:["Memória","Circulação"]},
+  {nome:"Ginseng 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/ginseng.png", doencas:["Energia","Disposição"]},
+  {nome:"Guaçatonga 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/guacatonga.png", doencas:["Estômago","Digestão"]},
+  {nome:"Hibisco 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/hibisco.png", doencas:["Pressão","Colesterol"]},
+  {nome:"Hiperico 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Hypericum perforatum, não alcoólico.", img:"imagens/hiperico.png", doencas:["Humor","Ansiedade"]},
+  {nome:"Inhame Selvagem Feminino 70g", cat:"Cuidados", desc:"Creme de inhame selvagem. Vegano, sem parabenos e aditivos.", img:"imagens/inhame_feminino.png", doencas:["Feminino","Hormônios"]},
+  {nome:"Inhame Selvagem Masculino 50g", cat:"Cuidados", desc:"Creme de inhame selvagem. Vegano, sem parabenos e aditivos.", img:"imagens/inhame_masculino.png", doencas:["Masculino","Hormônios"]},
+  {nome:"Ipê Roxo 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/ipe_roxo.png", doencas:["Imunidade","Pele"]},
+  {nome:"Melão de São Caetano 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/melao_de_sao_caetano.png", doencas:["Diabetes","Pele"]},
+  {nome:"Mentrasto 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/mentrasto.png", doencas:["Estômago","Digestão"]},
+  {nome:"Mulungu 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/mulungu.png", doencas:["Sono","Ansiedade"]},
+  {nome:"Óleo de Massagem 140ml", cat:"Óleos", desc:"Óleo de massagem corporal.", img:"imagens/oelo_de_massagem_140_ml.png", doencas:["Dores","Relaxamento"]},
+  {nome:"Óleo de Alho 60ml", cat:"Óleos", desc:"Óleo vegetal de alho.", img:"imagens/oleo_de_alho.png", doencas:["Imunidade","Coração"]},
+  {nome:"Óleo de Argan 60ml", cat:"Óleos", desc:"Óleo vegetal de argan para cabelos e pele.", img:"imagens/oleo_de_argan.png", doencas:["Pele","Cabelo"]},
+  {nome:"Óleo de Linhaça Dourada 60ml", cat:"Óleos", desc:"Óleo vegetal de linhaça dourada, rico em antioxidantes.", img:"imagens/oleo_de_linhaca_dourada.png", doencas:["Colesterol","Coração"]},
+  {nome:"Óleo de Massagem 1 Litro", cat:"Óleos", desc:"Óleo de massagem corporal em embalagem econômica.", img:"imagens/oleo_de_massagem_1_L.png", doencas:["Dores","Relaxamento"]},
+  {nome:"Óleo de Orégano 60ml", cat:"Óleos", desc:"Óleo vegetal de orégano.", img:"imagens/oleo_de_oregano.png", doencas:["Imunidade","Respiratório"]},
+  {nome:"Óleo de Rícino 60ml", cat:"Óleos", desc:"Óleo vegetal de rícino para cabelos, sobrancelhas e cílios.", img:"imagens/oleo_de_ricino.png", doencas:["Cabelo","Pele"]},
+  {nome:"Óleo de Rosa Mosqueta 60ml", cat:"Óleos", desc:"Rico em ácidos graxos, vitamina A, C e E.", img:"imagens/oleo_de_rosa_mosqueta.png", doencas:["Pele"]},
+  {nome:"Óleo de Semente de Abóbora 60ml", cat:"Óleos", desc:"Óleo vegetal de semente de abóbora.", img:"imagens/oleo_de_semente_de_abobora.png", doencas:["Masculino","Próstata"]},
+  {nome:"Óleo de Semente de Uva 60ml", cat:"Óleos", desc:"Óleo vegetal de semente de uva.", img:"imagens/oleo_de_semente_de_uva.png", doencas:["Pele","Colesterol"]},
+  {nome:"Óleo Essencial de Alecrim 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_alecrim.png", doencas:["Memória","Dores"]},
+  {nome:"Óleo Essencial de Copaíba 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_copaiba.png", doencas:["Anti-inflamatório","Pele"]},
+  {nome:"Óleo Essencial de Eucalipto 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_eucalipto.png", doencas:["Respiratório"]},
+  {nome:"Óleo Essencial de Hortelã Pimenta 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial de Mentha piperita, 100% puro.", img:"imagens/oleo_essencial_de_hortela.png", doencas:["Digestão","Respiratório"]},
+  {nome:"Óleo Essencial de Lavanda 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_lavanda.png", doencas:["Sono","Relaxamento"]},
+  {nome:"Óleo Essencial de Limão Siciliano 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_limao_siciliano.png", doencas:["Imunidade","Digestão"]},
+  {nome:"Óleo Essencial de Melaleuca 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", img:"imagens/oleo_essencial_de_melaleuca.png", doencas:["Pele","Imunidade"]},
+  {nome:"Própolis Verde 70% 30ml", cat:"Extratos", desc:"Extrato de própolis verde, não alcoólico.", img:"imagens/propolis_verde.png", doencas:["Imunidade","Garganta"]},
+  {nome:"Quitoco 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/quitoco.png", doencas:["Estômago","Digestão"]},
+  {nome:"Salsaparrilha 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/salsa_parrilha.png", doencas:["Pele","Rins"]},
+  {nome:"Sérum Facial Regenerador 30ml", cat:"Cuidados", desc:"Sérum facial regenerador.", img:"imagens/serum_facial.png", doencas:["Pele"]},
+  {nome:"Sucupira 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/sucupira.png", doencas:["Anti-inflamatório","Dores"]},
+  {nome:"Tansagem 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/tansagem.png", doencas:["Respiratório","Intestino"]},
+  {nome:"Tribulus Terrestre e Maca Peruana 30ml", cat:"Extratos", desc:"Extrato fitoterápico combinado, não alcoólico.", img:"imagens/tribulus_e_maca.png", doencas:["Energia","Masculino"]},
+  {nome:"Unha de Gato 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Uncaria tomentosa, não alcoólico.", img:"imagens/unha_de_gato.png", doencas:["Imunidade","Anti-inflamatório"]},
+  {nome:"Uxi Amarelo 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", img:"imagens/uxi_amarelo.png", doencas:["Feminino","Intestino"]},
+  {nome:"Valeriana 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Valeriana officinalis, não alcoólico.", img:"imagens/valeriana.png", doencas:["Sono","Ansiedade"]},
+  {nome:"Vitex 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Vitex agnus-castus, não alcoólico.", img:"imagens/vitex.png", doencas:["Feminino","Hormônios"]}
+];
+
+// ===== ESTADO DOS FILTROS =====
+let ordem = '';
+let tipoAtivo = '';
+let doencaAtiva = '';
+
+// ===== CARRINHO =====
+let carrinho = {};
+
+const grid = document.getElementById('grid');
+const busca = document.getElementById('busca');
+const vazio = document.getElementById('vazio');
+const filtroToggle = document.getElementById('filtroToggle');
+const filtroPainel = document.getElementById('filtroPainel');
+const filtroOrdem = document.getElementById('filtroOrdem');
+const filtroTipo = document.getElementById('filtroTipo');
+const filtroDoenca = document.getElementById('filtroDoenca');
+const filtroLimpar = document.getElementById('filtroLimpar');
+
+const cartFab = document.getElementById('cartFab');
+const cartBadge = document.getElementById('cartBadge');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartPanel = document.getElementById('cartPanel');
+const cartClose = document.getElementById('cartClose');
+const cartItems = document.getElementById('cartItems');
+const cartTotal = document.getElementById('cartTotal');
+const cartCheckout = document.getElementById('cartCheckout');
+const toast = document.getElementById('toast');
+
+// ===== EFEITO RIPPLE NOS BOTÕES =====
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.btn, .f-opcao, .filtro-toggle, .cart-checkout');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+});
+
+// ===== TOAST =====
+let toastTimer;
+function mostrarToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('mostrar');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('mostrar'), 1800);
+}
+
+// ===== FILTROS =====
+const categorias = [...new Set(produtos.map(p => p.cat))];
+categorias.forEach(cat => {
+  const b = document.createElement('button');
+  b.className = 'f-opcao';
+  b.textContent = cat;
+  b.dataset.tipo = cat;
+  b.onclick = () => {
+    tipoAtivo = (tipoAtivo === cat) ? '' : cat;
+    atualizarAtivos();
+    render();
+  };
+  filtroTipo.appendChild(b);
+});
+
+const doencas = [...new Set(produtos.flatMap(p => p.doencas))].sort();
+doencas.forEach(d => {
+  const b = document.createElement('button');
+  b.className = 'f-opcao';
+  b.textContent = d;
+  b.dataset.doenca = d;
+  b.onclick = () => {
+    doencaAtiva = (doencaAtiva === d) ? '' : d;
+    atualizarAtivos();
+    render();
+  };
+  filtroDoenca.appendChild(b);
+});
+
+filtroOrdem.querySelectorAll('.f-opcao').forEach(b => {
+  b.onclick = () => {
+    ordem = (ordem === b.dataset.ordem) ? '' : b.dataset.ordem;
+    atualizarAtivos();
+    render();
+  };
+});
+
+filtroToggle.onclick = () => filtroPainel.classList.toggle('aberto');
+
+filtroLimpar.onclick = () => {
+  ordem = ''; tipoAtivo = ''; doencaAtiva = '';
+  atualizarAtivos();
+  render();
+};
+
+function atualizarAtivos(){
+  filtroOrdem.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.ordem === ordem));
+  filtroTipo.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.tipo === tipoAtivo));
+  filtroDoenca.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.doenca === doencaAtiva));
+}
+
+function render(){
+  const termo = busca.value.toLowerCase();
+  let lista = produtos.filter(p =>
+    (!termo || p.nome.toLowerCase().includes(termo)) &&
+    (!tipoAtivo || p.cat === tipoAtivo) &&
+    (!doencaAtiva || p.doencas.includes(doencaAtiva))
+  );
+  if(ordem === 'az') lista = [...lista].sort((a,b) => a.nome.localeCompare(b.nome, 'pt'));
+  if(ordem === 'za') lista = [...lista].sort((a,b) => b.nome.localeCompare(a.nome, 'pt'));
+
+  grid.innerHTML = lista.map((p, i) => {
+    const idx = produtos.indexOf(p);
+    return `
+    <div class="card" style="animation-delay:${Math.min(i*0.05,0.5)}s">
+      <div class="img-wrap">
+        <img src="${p.img}" alt="${p.nome}" loading="lazy">
+        <span class="cat-badge">${p.cat}</span>
+      </div>
+      <div class="info">
+        <h3>${p.nome}</h3>
+        <div class="doencas">${p.doencas.map(d => `<span class="doenca-tag">${d}</span>`).join('')}</div>
+        <p>${p.desc}</p>
+        <div class="botoes">
+          <button class="btn btn-add" onclick="adicionar(${idx})">+ Adicionar</button>
+          <a class="btn btn1" target="_blank" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Olá! Tenho interesse no produto: ' + p.nome)}">WhatsApp</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  vazio.style.display = lista.length ? 'none' : 'block';
+}
+
+// ===== CARRINHO =====
+function adicionar(i){
+  carrinho[i] = (carrinho[i] || 0) + 1;
+  atualizarCarrinho();
+  cartBadge.classList.remove('pula');
+  void cartBadge.offsetWidth;
+  cartBadge.classList.add('pula');
+  mostrarToast('✅ ' + produtos[i].nome + ' adicionado!');
+}
+function atualizarCarrinho(){
+  const totalItens = Object.values(carrinho).reduce((a,b) => a+b, 0);
+  cartBadge.textContent = totalItens;
+  cartCheckout.disabled = totalItens === 0;
+  renderCarrinho();
+}
+function renderCarrinho(){
+  const chaves = Object.keys(carrinho);
+  if(chaves.length === 0){
+    cartItems.innerHTML = '<div class="cart-vazio">Seu carrinho está vazio.<br>Adicione produtos para começar 🌿</div>';
+    cartTotal.textContent = '0';
+    return;
+  }
+  cartItems.innerHTML = chaves.map(i => {
+    const p = produtos[i];
+    const qtd = carrinho[i];
+    return `
+      <div class="cart-item">
+        <img src="${p.img}" alt="${p.nome}">
+        <div class="ci-info">
+          <div class="ci-nome">${p.nome}</div>
+          <div class="ci-qtd">
+            <button onclick="mudarQtd(${i},-1)">−</button>
+            <span>${qtd}</span>
+            <button onclick="mudarQtd(${i},1)">+</button>
+          </div>
+        </div>
+        <button class="ci-remove" onclick="remover(${i})">🗑</button>
+      </div>
+    `;
+  }).join('');
+  cartTotal.textContent = Object.values(carrinho).reduce((a,b) => a+b, 0);
+}
+function mudarQtd(i, delta){
+  carrinho[i] = (carrinho[i] || 0) + delta;
+  if(carrinho[i] <= 0) delete carrinho[i];
+  atualizarCarrinho();
+}
+function remover(i){
+  delete carrinho[i];
+  atualizarCarrinho();
+}
+function montarMensagem(){
+  const linhas = Object.keys(carrinho).map(i => {
+    const p = produtos[i];
+    const qtd = carrinho[i];
+    return qtd > 1 ? `${qtd}x ${p.nome}` : `1x ${p.nome}`;
+  });
+  return 'Olá! Gostaria de fazer um pedido:\n\n' + linhas.join('\n') + '\n\nPoderia me confirmar a disponibilidade?';
+}
+function finalizar(){
+  if(Object.keys(carrinho).length === 0) return;
+  const msg = encodeURIComponent(montarMensagem());
+  window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank');
+  carrinho = {};
+  atualizarCarrinho();
+  fecharCarrinho();
+}
+function abrirCarrinho(){
+  cartPanel.classList.add('aberto');
+  cartOverlay.classList.add('aberto');
+  renderCarrinho();
+}
+function fecharCarrinho(){
+  cartPanel.classList.remove('aberto');
+  cartOverlay.classList.remove('aberto');
+}
+cartFab.onclick = abrirCarrinho;
+cartClose.onclick = fecharCarrinho;
+cartOverlay.onclick = fecharCarrinho;
+cartCheckout.onclick = finalizar;
+
+busca.addEventListener('input', render);
+render();
+atualizarCarrinho();
+</script>
+</body>
+</html>
