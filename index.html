@@ -5,191 +5,134 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Cotara — Catálogo de Produtos Naturais</title>
 <style>
-  :root{
-    --verde-profundo:#2D6A4F;
-    --verde-sabvia:#74C69D;
-    --off-white:#F8F6F1;
-    --terracota:#C77D5A;
-    --texto:#1B4332;
-    --sombra:0 8px 30px rgba(27,67,50,.10);
-    --sombra-hover:0 16px 40px rgba(27,67,50,.18);
-    --raio:18px;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--off-white);color:var(--texto);overflow-x:hidden;}
-
-  header{background:linear-gradient(135deg,var(--verde-profundo) 0%,#3d8a68 50%,var(--verde-sabvia) 100%);color:#fff;text-align:center;padding:48px 20px;position:relative;overflow:hidden;}
-  header::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.12),transparent 60%);animation:brilho 8s ease-in-out infinite;}
-  @keyframes brilho{0%,100%{opacity:.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-10px)}}
-  header h1{font-size:2.4rem;letter-spacing:1px;position:relative;animation:desce .6s ease-out;}
-  header p{margin-top:8px;font-size:1.05rem;opacity:.95;position:relative;animation:desce .6s .1s ease-out both;}
-  @keyframes desce{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
-
-  .container{max-width:1200px;margin:0 auto;padding:20px;}
-  .controles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:24px 0;}
-  #busca{flex:1;min-width:240px;max-width:480px;padding:13px 18px;border:2px solid var(--verde-sabvia);border-radius:30px;font-size:1rem;outline:none;transition:.3s;background:#fff;box-shadow:var(--sombra);}
-  #busca:focus{border-color:var(--verde-profundo);box-shadow:0 0 0 4px rgba(116,198,157,.25);transform:scale(1.01);}
-
-  .filtro-toggle{display:block;width:100%;max-width:480px;margin:0 auto 12px;padding:14px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;transition:.3s;text-align:center;box-shadow:var(--sombra);}
-  .filtro-toggle:hover{transform:translateY(-2px);box-shadow:var(--sombra-hover);}
-  .filtro-toggle:active{transform:scale(.97);}
-  .filtro-painel{max-width:480px;margin:0 auto 24px;background:#fff;border:2px solid var(--verde-sabvia);border-radius:16px;padding:18px;max-height:0;overflow:hidden;opacity:0;transform:translateY(-10px);transition:max-height .4s ease,opacity .3s ease,transform .3s ease;}
-  .filtro-painel.aberto{max-height:600px;opacity:1;transform:translateY(0);}
-  .filtro-grupo{margin-bottom:16px;}
-  .filtro-grupo:last-child{margin-bottom:0;}
-  .filtro-grupo h4{font-size:.85rem;color:var(--terracota);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
-  .filtro-opcoes{display:flex;flex-wrap:wrap;gap:6px;}
-  .f-opcao{padding:7px 13px;border:2px solid var(--verde-sabvia);border-radius:20px;background:#fff;cursor:pointer;font-size:.82rem;color:var(--texto);transition:.25s;position:relative;overflow:hidden;}
-  .f-opcao.ativo,.f-opcao:hover{background:var(--verde-profundo);color:#fff;border-color:var(--verde-profundo);transform:translateY(-1px);}
-  .f-limpar{display:block;width:100%;margin-top:14px;padding:10px;border:2px solid var(--terracota);border-radius:10px;background:#fff;color:var(--terracota);font-weight:700;cursor:pointer;transition:.25s;font-size:.85rem;}
-  .f-limpar:hover{background:var(--terracota);color:#fff;}
-
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;}
-  .card{background:#fff;border-radius:var(--raio);overflow:hidden;box-shadow:var(--sombra);display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;opacity:0;transform:translateY(24px);animation:entra .5s ease-out forwards;position:relative;cursor:pointer;}
-  @keyframes entra{to{opacity:1;transform:translateY(0)}}
-  .card:hover{transform:translateY(-6px);box-shadow:var(--sombra-hover);}
-  .card .img-wrap{overflow:hidden;position:relative;height:230px;background:var(--off-white);}
-  .card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
-  .card:hover img{transform:scale(1.08);}
-  .card .cat-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);color:var(--verde-profundo);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
-  .card .info{padding:16px;display:flex;flex-direction:column;flex:1;}
-  .card h3{font-size:1.05rem;margin-bottom:6px;color:var(--verde-profundo);}
-  .card .doencas{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
-  .card .doenca-tag{font-size:.68rem;background:var(--off-white);color:var(--verde-profundo);border:1px solid var(--verde-sabvia);padding:2px 8px;border-radius:12px;}
-  .card .preco-card{font-size:1.1rem;font-weight:800;color:var(--verde-profundo);margin-bottom:6px;}
-  .card p{font-size:.88rem;color:#4a5d52;line-height:1.45;flex:1;}
-  .botoes{display:flex;gap:8px;margin-top:14px;}
-  .btn{flex:1;text-align:center;text-decoration:none;padding:11px 8px;border-radius:12px;font-size:.85rem;font-weight:600;transition:.25s;cursor:pointer;border:none;position:relative;overflow:hidden;}
-  .btn1{background:var(--verde-profundo);color:#fff;}
-  .btn1:hover{background:#245a43;transform:translateY(-2px);box-shadow:0 6px 16px rgba(45,106,79,.35);}
-  .btn-add{background:var(--verde-sabvia);color:var(--texto);}
-  .btn-add:hover{background:#5fb58a;transform:translateY(-2px);box-shadow:0 6px 16px rgba(116,198,157,.4);}
-  .btn:active{transform:scale(.94);}
-
-  .ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .5s linear;pointer-events:none;}
-  @keyframes ripple{to{transform:scale(4);opacity:0}}
-
-  footer{text-align:center;padding:30px 20px;color:#6b7a72;font-size:.9rem;}
-  .vazio{text-align:center;padding:40px;color:#6b7a72;display:none;}
-
-  /* ===== CARRINHO (verde) ===== */
-  .cart-fab{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(27,67,50,.35);cursor:pointer;z-index:100;border:none;transition:transform .25s;animation:sobe .6s .3s ease-out both;}
-  @keyframes sobe{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-  .cart-fab:hover{transform:scale(1.1) rotate(-4deg);}
-  .cart-fab:active{transform:scale(.9);}
-  .cart-fab .badge{position:absolute;top:-4px;right:-4px;background:var(--verde-profundo);color:#fff;font-size:.75rem;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;transition:transform .2s;}
-  .cart-fab .badge.pula{animation:pula .4s ease;}
-  @keyframes pula{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
-
-  .cart-overlay{position:fixed;inset:0;background:rgba(27,67,50,.5);opacity:0;visibility:hidden;transition:.3s;z-index:200;backdrop-filter:blur(2px);}
-  .cart-overlay.aberto{opacity:1;visibility:visible;}
-  .cart-panel{position:fixed;top:0;right:0;height:100%;width:100%;max-width:420px;background:#fff;box-shadow:-8px 0 30px rgba(0,0,0,.2);transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:201;display:flex;flex-direction:column;}
-  .cart-panel.aberto{transform:translateX(0);}
-  .cart-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;}
-  .cart-head h2{font-size:1.2rem;}
-  .cart-close{background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1;transition:transform .2s;}
-  .cart-close:hover{transform:rotate(90deg);}
-  .cart-items{flex:1;overflow-y:auto;padding:16px 20px;}
-  .cart-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eee;animation:entra .3s ease-out both;}
-  .cart-item img{width:52px;height:52px;object-fit:cover;border-radius:10px;}
-  .cart-item .ci-info{flex:1;}
-  .cart-item .ci-nome{font-size:.9rem;font-weight:600;color:var(--verde-profundo);}
-  .cart-item .ci-qtd{display:flex;align-items:center;gap:8px;margin-top:6px;}
-  .ci-qtd button{width:26px;height:26px;border-radius:8px;border:1px solid var(--verde-sabvia);background:#fff;cursor:pointer;font-weight:700;color:var(--verde-profundo);transition:.2s;}
-  .ci-qtd button:hover{background:var(--verde-sabvia);}
-  .ci-qtd button:active{transform:scale(.85);}
-  .ci-qtd span{min-width:20px;text-align:center;font-weight:600;}
-  .ci-remove{background:none;border:none;color:var(--terracota);font-size:1.2rem;cursor:pointer;transition:.2s;}
-  .ci-remove:hover{transform:scale(1.2);}
-  .cart-vazio{text-align:center;color:#6b7a72;padding:40px 0;}
-  .cart-foot{padding:18px 20px;border-top:1px solid #eee;background:var(--off-white);}
-  .cart-total{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;margin-bottom:12px;color:var(--texto);}
-  .cart-checkout{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:.25s;position:relative;overflow:hidden;}
-  .cart-checkout:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(45,106,79,.35);}
-  .cart-checkout:active{transform:scale(.97);}
-  .cart-checkout:disabled{background:#b8c9c0;cursor:not-allowed;transform:none;box-shadow:none;}
-
-  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde-profundo);color:#fff;padding:14px 24px;border-radius:14px;font-size:.9rem;font-weight:600;box-shadow:0 10px 30px rgba(27,67,50,.4);opacity:0;transition:.4s cubic-bezier(.2,.8,.2,1);z-index:300;display:flex;align-items:center;gap:8px;pointer-events:none;}
-  .toast.mostrar{opacity:1;transform:translateX(-50%) translateY(0);}
-
-  /* ===== MODAL DE DETALHES ===== */
-  .modal-overlay{position:fixed;inset:0;background:rgba(27,67,50,.55);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
-  .modal-overlay.aberto{display:flex;}
-  .modal{background:#fff;border-radius:var(--raio);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative;animation:modalIn .3s;}
-  @keyframes modalIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .modal-fechar{position:sticky;top:12px;float:right;margin:12px;background:var(--off-white);border:none;width:36px;height:36px;border-radius:50%;font-size:1.3rem;cursor:pointer;color:var(--texto);z-index:2;transition:.2s;}
-  .modal-fechar:hover{background:#e7e2d9;transform:rotate(90deg);}
-  .modal-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--off-white);}
-  .modal-corpo{padding:22px;}
-  .modal-cat{display:inline-block;background:var(--verde-sabvia);color:#fff;font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
-  .modal-corpo h2{font-size:1.35rem;margin-bottom:8px;color:var(--texto);}
-  .modal-preco{font-size:1.5rem;font-weight:800;color:var(--verde-profundo);margin-bottom:12px;}
-  /* ===== DESCRIÇÃO RECOLHÍVEL ===== */
-  .modal-desc{max-height:110px;overflow:hidden;font-size:.92rem;color:#4a5b52;line-height:1.65;margin-bottom:6px;white-space:pre-line;transition:max-height .4s ease;}
-  .modal-desc.aberto{max-height:2000px;}
-  .modal-desc-btn{background:none;border:none;color:var(--verde-profundo);font-weight:700;cursor:pointer;font-size:.85rem;padding:0;margin-bottom:14px;display:inline-block;}
-  .modal-desc-btn:hover{text-decoration:underline;}
-  .modal-doencas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
-  .modal-botoes{display:flex;gap:10px;}
+:root{--verde-profundo:#2D6A4F;--verde-sabvia:#74C69D;--off-white:#F8F6F1;--terracota:#C77D5A;--texto:#1B4332;--sombra:0 8px 30px rgba(27,67,50,.10);--sombra-hover:0 16px 40px rgba(27,67,50,.18);--raio:18px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:var(--off-white);color:var(--texto);overflow-x:hidden;}
+header{background:linear-gradient(135deg,var(--verde-profundo) 0%,#3d8a68 50%,var(--verde-sabvia) 100%);color:#fff;text-align:center;padding:48px 20px;position:relative;overflow:hidden;}
+header::before{content:'';position:absolute;top:-60%;left:-20%;width:140%;height:200%;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.12),transparent 60%);animation:brilho 8s ease-in-out infinite;}
+@keyframes brilho{0%,100%{opacity:.6;transform:translateY(0)}50%{opacity:1;transform:translateY(-10px)}}
+header h1{font-size:2.4rem;letter-spacing:1px;position:relative;animation:desce .6s ease-out;}
+header p{margin-top:8px;font-size:1.05rem;opacity:.95;position:relative;animation:desce .6s .1s ease-out both;}
+@keyframes desce{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
+.container{max-width:1200px;margin:0 auto;padding:20px;}
+.controles{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:24px 0;}
+#busca{flex:1;min-width:240px;max-width:480px;padding:13px 18px;border:2px solid var(--verde-sabvia);border-radius:30px;font-size:1rem;outline:none;transition:.3s;background:#fff;box-shadow:var(--sombra);}
+#busca:focus{border-color:var(--verde-profundo);box-shadow:0 0 0 4px rgba(116,198,157,.25);transform:scale(1.01);}
+.filtro-toggle{display:block;width:100%;max-width:480px;margin:0 auto 12px;padding:14px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;border:none;border-radius:14px;font-size:1rem;font-weight:700;cursor:pointer;transition:.3s;text-align:center;box-shadow:var(--sombra);}
+.filtro-toggle:hover{transform:translateY(-2px);box-shadow:var(--sombra-hover);}
+.filtro-toggle:active{transform:scale(.97);}
+.filtro-painel{max-width:480px;margin:0 auto 24px;background:#fff;border:2px solid var(--verde-sabvia);border-radius:16px;padding:18px;max-height:0;overflow:hidden;opacity:0;transform:translateY(-10px);transition:max-height .4s ease,opacity .3s ease,transform .3s ease;}
+.filtro-painel.aberto{max-height:900px;opacity:1;transform:translateY(0);}
+.filtro-grupo{margin-bottom:16px;}
+.filtro-grupo:last-child{margin-bottom:0;}
+.filtro-grupo h4{font-size:.85rem;color:var(--terracota);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;}
+.filtro-opcoes{display:flex;flex-wrap:wrap;gap:6px;}
+.f-opcao{padding:7px 13px;border:2px solid var(--verde-sabvia);border-radius:20px;background:#fff;cursor:pointer;font-size:.82rem;color:var(--texto);transition:.25s;position:relative;overflow:hidden;}
+.f-opcao.ativo,.f-opcao:hover{background:var(--verde-profundo);color:#fff;border-color:var(--verde-profundo);transform:translateY(-1px);}
+.f-limpar{display:block;width:100%;margin-top:14px;padding:10px;border:2px solid var(--terracota);border-radius:10px;background:#fff;color:var(--terracota);font-weight:700;cursor:pointer;transition:.25s;font-size:.85rem;}
+.f-limpar:hover{background:var(--terracota);color:#fff;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px;}
+.card{background:#fff;border-radius:var(--raio);overflow:hidden;box-shadow:var(--sombra);display:flex;flex-direction:column;transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;opacity:0;transform:translateY(24px);animation:entra .5s ease-out forwards;position:relative;cursor:pointer;}
+@keyframes entra{to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-6px);box-shadow:var(--sombra-hover);}
+.card .img-wrap{overflow:hidden;position:relative;height:230px;background:var(--off-white);}
+.card img{width:100%;height:100%;object-fit:cover;transition:transform .5s ease;}
+.card:hover img{transform:scale(1.08);}
+.card .cat-badge{position:absolute;top:12px;left:12px;background:rgba(255,255,255,.92);backdrop-filter:blur(4px);color:var(--verde-profundo);font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:5px 10px;border-radius:20px;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.card .info{padding:16px;display:flex;flex-direction:column;flex:1;}
+.card h3{font-size:1.05rem;margin-bottom:6px;color:var(--verde-profundo);}
+.card .doencas{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.card .doenca-tag{font-size:.68rem;background:var(--off-white);color:var(--verde-profundo);border:1px solid var(--verde-sabvia);padding:2px 8px;border-radius:12px;}
+.card .preco-card{font-size:1.15rem;font-weight:800;color:var(--verde-profundo);margin-bottom:6px;}
+.card p{font-size:.88rem;color:#4a5d52;line-height:1.45;flex:1;}
+.botoes{display:flex;gap:8px;margin-top:14px;}
+.btn{flex:1;text-align:center;text-decoration:none;padding:11px 8px;border-radius:12px;font-size:.85rem;font-weight:600;transition:.25s;cursor:pointer;border:none;position:relative;overflow:hidden;}
+.btn1{background:var(--verde-profundo);color:#fff;}
+.btn1:hover{background:#245a43;transform:translateY(-2px);box-shadow:0 6px 16px rgba(45,106,79,.35);}
+.btn-add{background:var(--verde-sabvia);color:var(--texto);}
+.btn-add:hover{background:#5fb58a;transform:translateY(-2px);box-shadow:0 6px 16px rgba(116,198,157,.4);}
+.btn:active{transform:scale(.94);}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);transform:scale(0);animation:ripple .5s linear;pointer-events:none;}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+footer{text-align:center;padding:30px 20px;color:#6b7a72;font-size:.9rem;}
+.vazio{text-align:center;padding:40px;color:#6b7a72;display:none;}
+.cart-fab{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;box-shadow:0 8px 24px rgba(27,67,50,.35);cursor:pointer;z-index:100;border:none;transition:transform .25s;animation:sobe .6s .3s ease-out both;}
+@keyframes sobe{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.cart-fab:hover{transform:scale(1.1) rotate(-4deg);}
+.cart-fab:active{transform:scale(.9);}
+.cart-fab .badge{position:absolute;top:-4px;right:-4px;background:var(--verde-profundo);color:#fff;font-size:.75rem;font-weight:700;min-width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;padding:0 4px;transition:transform .2s;}
+.cart-fab .badge.pula{animation:pula .4s ease;}
+@keyframes pula{0%{transform:scale(1)}40%{transform:scale(1.5)}100%{transform:scale(1)}}
+.cart-overlay{position:fixed;inset:0;background:rgba(27,67,50,.5);opacity:0;visibility:hidden;transition:.3s;z-index:200;backdrop-filter:blur(2px);}
+.cart-overlay.aberto{opacity:1;visibility:visible;}
+.cart-panel{position:fixed;top:0;right:0;height:100%;width:100%;max-width:420px;background:#fff;box-shadow:-8px 0 30px rgba(0,0,0,.2);transform:translateX(100%);transition:transform .35s cubic-bezier(.2,.8,.2,1);z-index:201;display:flex;flex-direction:column;}
+.cart-panel.aberto{transform:translateX(0);}
+.cart-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;}
+.cart-head h2{font-size:1.2rem;}
+.cart-close{background:none;border:none;color:#fff;font-size:1.6rem;cursor:pointer;line-height:1;transition:transform .2s;}
+.cart-close:hover{transform:rotate(90deg);}
+.cart-items{flex:1;overflow-y:auto;padding:16px 20px;}
+.cart-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #eee;animation:entra .3s ease-out both;}
+.cart-item img{width:52px;height:52px;object-fit:cover;border-radius:10px;}
+.cart-item .ci-info{flex:1;}
+.cart-item .ci-nome{font-size:.9rem;font-weight:600;color:var(--verde-profundo);}
+.cart-item .ci-qtd{display:flex;align-items:center;gap:8px;margin-top:6px;}
+.ci-qtd button{width:26px;height:26px;border-radius:8px;border:1px solid var(--verde-sabvia);background:#fff;cursor:pointer;font-weight:700;color:var(--verde-profundo);transition:.2s;}
+.ci-qtd button:hover{background:var(--verde-sabvia);}
+.ci-qtd button:active{transform:scale(.85);}
+.ci-qtd span{min-width:20px;text-align:center;font-weight:600;}
+.ci-remove{background:none;border:none;color:var(--terracota);font-size:1.2rem;cursor:pointer;transition:.2s;}
+.ci-remove:hover{transform:scale(1.2);}
+.cart-vazio{text-align:center;color:#6b7a72;padding:40px 0;}
+.cart-foot{padding:18px 20px;border-top:1px solid #eee;background:var(--off-white);}
+.cart-total{display:flex;justify-content:space-between;font-weight:700;font-size:1.05rem;margin-bottom:12px;color:var(--texto);}
+.cart-checkout{width:100%;padding:14px;border:none;border-radius:12px;background:linear-gradient(135deg,var(--verde-profundo),#3d8a68);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;transition:.25s;position:relative;overflow:hidden;}
+.cart-checkout:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(45,106,79,.35);}
+.cart-checkout:active{transform:scale(.97);}
+.cart-checkout:disabled{background:#b8c9c0;cursor:not-allowed;transform:none;box-shadow:none;}
+.toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--verde-profundo);color:#fff;padding:14px 24px;border-radius:14px;font-size:.9rem;font-weight:600;box-shadow:0 10px 30px rgba(27,67,50,.4);opacity:0;transition:.4s cubic-bezier(.2,.8,.2,1);z-index:300;display:flex;align-items:center;gap:8px;pointer-events:none;}
+.toast.mostrar{opacity:1;transform:translateX(-50%) translateY(0);}
+.modal-overlay{position:fixed;inset:0;background:rgba(27,67,50,.55);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.modal-overlay.aberto{display:flex;}
+.modal{background:#fff;border-radius:var(--raio);max-width:560px;width:100%;max-height:90vh;overflow-y:auto;position:relative;animation:modalIn .3s;}
+@keyframes modalIn{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal-fechar{position:sticky;top:12px;float:right;margin:12px;background:var(--off-white);border:none;width:36px;height:36px;border-radius:50%;font-size:1.3rem;cursor:pointer;color:var(--texto);z-index:2;transition:.2s;}
+.modal-fechar:hover{background:#e7e2d9;transform:rotate(90deg);}
+.modal-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:var(--off-white);}
+.modal-corpo{padding:22px;}
+.modal-cat{display:inline-block;background:var(--verde-sabvia);color:#fff;font-size:.72rem;font-weight:600;padding:4px 10px;border-radius:20px;margin-bottom:10px;}
+.modal-corpo h2{font-size:1.35rem;margin-bottom:8px;color:var(--texto);}
+.modal-preco{font-size:1.5rem;font-weight:800;color:var(--verde-profundo);margin-bottom:12px;}
+.modal-desc{max-height:110px;overflow:hidden;font-size:.92rem;color:#4a5b52;line-height:1.65;margin-bottom:6px;white-space:pre-line;transition:max-height .4s ease;}
+.modal-desc.aberto{max-height:2000px;}
+.modal-desc-btn{background:none;border:none;color:var(--verde-profundo);font-weight:700;cursor:pointer;font-size:.85rem;padding:0;margin-bottom:14px;display:inline-block;}
+.modal-desc-btn:hover{text-decoration:underline;}
+.modal-doencas{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px;}
+.modal-botoes{display:flex;gap:10px;}
 </style>
 </head>
 <body>
-
-<header>
-  <h1>🌿 Cotara</h1>
-  <p>Produtos naturais e fitoterápicos selecionados</p>
-</header>
-
+<header><h1>🌿 Cotara</h1><p>Produtos naturais e fitoterápicos selecionados</p></header>
 <div class="container">
-  <div class="controles">
-    <input type="text" id="busca" placeholder="🔍 Buscar produto...">
-  </div>
-
+  <div class="controles"><input type="text" id="busca" placeholder="🔍 Buscar produto..."></div>
   <button class="filtro-toggle" id="filtroToggle">⚙️ Filtros e Ordenação</button>
-
   <div class="filtro-painel" id="filtroPainel">
-    <div class="filtro-grupo">
-      <h4>Ordenar por</h4>
-      <div class="filtro-opcoes" id="filtroOrdem">
-        <button class="f-opcao" data-ordem="az">A → Z</button>
-        <button class="f-opcao" data-ordem="za">Z → A</button>
-      </div>
-    </div>
-    <div class="filtro-grupo">
-      <h4>Tipo de produto</h4>
-      <div class="filtro-opcoes" id="filtroTipo"></div>
-    </div>
-    <div class="filtro-grupo">
-      <h4>Doenças / Áreas do corpo</h4>
-      <div class="filtro-opcoes" id="filtroDoenca"></div>
-    </div>
+    <div class="filtro-grupo"><h4>Ordenar por</h4><div class="filtro-opcoes" id="filtroOrdem"><button class="f-opcao" data-ordem="az">A → Z</button><button class="f-opcao" data-ordem="za">Z → A</button></div></div>
+    <div class="filtro-grupo"><h4>Tipo de produto</h4><div class="filtro-opcoes" id="filtroTipo"></div></div>
+    <div class="filtro-grupo"><h4>Doenças / Áreas do corpo</h4><div class="filtro-opcoes" id="filtroDoenca"></div></div>
     <button class="f-limpar" id="filtroLimpar">Limpar filtros</button>
   </div>
-
   <div class="grid" id="grid"></div>
   <div class="vazio" id="vazio">Nenhum produto encontrado.</div>
 </div>
-
-<footer>
-  Cotara — Produtos Naturais · Peça pelo WhatsApp e receba em casa 🌿
-</footer>
-
+<footer>Cotara — Produtos Naturais · Peça pelo WhatsApp e receba em casa 🌿</footer>
 <button class="cart-fab" id="cartFab" title="Ver carrinho">🛒<span class="badge" id="cartBadge">0</span></button>
-
 <div class="cart-overlay" id="cartOverlay"></div>
 <aside class="cart-panel" id="cartPanel">
-  <div class="cart-head">
-    <h2>🛒 Seu carrinho</h2>
-    <button class="cart-close" id="cartClose">×</button>
-  </div>
+  <div class="cart-head"><h2>🛒 Seu carrinho</h2><button class="cart-close" id="cartClose">×</button></div>
   <div class="cart-items" id="cartItems"></div>
-  <div class="cart-foot">
-    <div class="cart-total"><span>Total de itens</span><span id="cartTotal">0</span></div>
-    <button class="cart-checkout" id="cartCheckout" disabled>Finalizar pedido no WhatsApp</button>
-  </div>
+  <div class="cart-foot"><div class="cart-total"><span>Total de itens</span><span id="cartTotal">0</span></div><button class="cart-checkout" id="cartCheckout" disabled>Finalizar pedido no WhatsApp</button></div>
 </aside>
-
-<!-- MODAL DE DETALHES -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <button class="modal-fechar" id="modalFechar">×</button>
@@ -201,20 +144,13 @@
       <p class="modal-desc" id="modalDesc"></p>
       <button class="modal-desc-btn" id="modalDescBtn">Ver descrição completa ▾</button>
       <div class="modal-doencas" id="modalDoencas"></div>
-      <div class="modal-botoes">
-        <button class="btn btn-add" id="modalAdd">+ Adicionar ao carrinho</button>
-        <a class="btn btn1" id="modalWhats" target="_blank">WhatsApp</a>
-      </div>
+      <div class="modal-botoes"><button class="btn btn-add" id="modalAdd">+ Adicionar ao carrinho</button><a class="btn btn1" id="modalWhats" target="_blank">WhatsApp</a></div>
     </div>
   </div>
 </div>
-
 <div class="toast" id="toast">✅ Produto adicionado ao carrinho!</div>
-
 <script>
-// ✅ NÚMERO DE WHATSAPP PADRÃO (com DDI 55 e DDD, sem espaços)
-const WHATSAPP = "5562984803759"; // 55 (62) 98480-3759
-
+const WHATSAPP = "5562984803759";
 const produtos = [
 {nome:"Açafrão 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Curcuma longa, não alcoólico.", descLonga:"Anti-inflamatório. Alivia a dor. Protege o coração. Diminui o risco de câncer. Depressão. Auxilia na prevenção e tratamento do Alzheimer. Melhora a função cerebral. Aumenta a capacidade antioxidante do corpo.", img:"imagens/acafrao.png", doencas:["Anti-inflamatório","Digestão"], preco:"33,75"},
 {nome:"Agoniada 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Plumeria lancifolia, não alcoólico.", descLonga:"Desconfortos da menopausa. Inflamações do útero. Depressão. Cólicas uterinas. Menstruação difícil.", img:"imagens/agoniada.png", doencas:["Estômago","Digestão"], preco:"33,75"},
@@ -229,7 +165,7 @@ const produtos = [
 {nome:"Cana do Brejo 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Diurético (dores e dificuldade de urinar). Anti-inflamatório. Cistite. Próstata. Ajuda a eliminar pedras na bexiga. Sífilis. Inflamações nos rins. Combate a arteriosclerose. Gonorreia. Leucorreia.", img:"imagens/cana_do_brejo.png", doencas:["Rins","Bexiga"], preco:"33,75"},
 {nome:"Canela de Velho 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Previne ou retarda alguns tipos de câncer devido a propriedades antioxidantes e antitumorais. Reduz a dor e a inflamação das articulações. Estimula a regeneração das cartilagens que revestem os ossos. Indicada para artrose, osteoartrite ou artrite reumatoide. Atenua as dores de coluna e dores musculares.", img:"imagens/canela_de_velho.png", doencas:["Diabetes","Rins"], preco:"33,75"},
 {nome:"Cardo Mariano 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Pode ajudar a tratar cirrose, hepatite e problemas da vesícula. Pode proteger o fígado dos efeitos do álcool, drogas e substâncias químicas tóxicas. Pode melhorar a função do fígado em pessoas com doenças hepáticas e ajudar a controlar a gordura no fígado. Melhora na digestão, pois estimula a produção de bile. Auxilia no aumento da imunidade, pois estimula a produção de glóbulos brancos. Ajuda na ação antioxidante, podendo proteger as células contra os radicais livres.", img:"imagens/cardo_mariano.png", doencas:["Fígado"], preco:"33,75"},
-{nome:"Carvão Vegetal Ativado 250g", cat:"Cuidados", desc:"Carvão ativado da casca de coco. Desintoxica, filtra e absorbe odores.", descLonga:"Indicado em casos de envenenamento devido intoxicação com produtos químicos ou intoxicação alimentar, náusea, vômito e diarreia. Elimina gases intestinais. Reduz o mau hálito. Clareia os dentes. Efetua limpeza profunda na pele e cabelos, removendo toxinas, impurezas, poluentes ou resquícios de outras substâncias químicas, como maquiagem ou tinturas. Absorve o veneno de picadas de cobra, aranha, escorpião, abelhas e vespas.", img:"imagens/carvao_ativado_em_po.png", doencas:["Intestino","Pele"], preco:"26,25"},
+{nome:"Carvão Vegetal Ativado 250g", cat:"Cuidados", desc:"Carvão ativado da casca de coco. Desintoxica, filtra e absorve odores.", descLonga:"Indicado em casos de envenenamento devido intoxicação com produtos químicos ou intoxicação alimentar, náusea, vômito e diarreia. Elimina gases intestinais. Reduz o mau hálito. Clareia os dentes. Efetua limpeza profunda na pele e cabelos, removendo toxinas, impurezas, poluentes ou resquícios de outras substâncias químicas, como maquiagem ou tinturas. Absorve o veneno de picadas de cobra, aranha, escorpião, abelhas e vespas.", img:"imagens/carvao_ativado_em_po.png", doencas:["Intestino","Pele"], preco:"26,25"},
 {nome:"Carqueja 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Má digestão. Azia. Constipação. Diurético. Gastroenterite. Anemia. Protetora do fígado. Diabetes. Vermes intestinais. Aftas. Amigdalites. Anorexia. Diminui o colesterol.", img:"imagens/carqueja.png", doencas:["Digestão","Diabetes"], preco:"33,75"},
 {nome:"Coentro 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"É um potente antioxidante natural que combate os radicais livres, auxilia a eliminar os metais pesados do organismo, no fortalecimento do sistema imunológico. Mantém a pele firme e hidratada. Previne o envelhecimento precoce. Ajuda na digestão e a equilibrar a flora intestinal. Combate as celulites. Rico em compostos antiparasitários que intoxicam, paralisam ou destroem os parasitas.", img:"imagens/coentro.png", doencas:["Digestão","Colesterol"], preco:"33,75"},
 {nome:"Dente de Leão 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Taraxacum officinale, não alcoólico.", descLonga:"Anti-anêmica. Anticolesterol. Arteriosclerose. Alergias. Acnes. Baixa produção de leite por lactantes. Celulite. Cárie dentária. Dermatoses. Diabetes. Edemas. Gordura no fígado. Falta de apetite. Hipoacidez gástrica. Impureza no sangue.", img:"imagens/dente_e_leao.png", doencas:["Fígado","Rins"], preco:"33,75"},
@@ -272,4 +208,224 @@ const produtos = [
 {nome:"Óleo Essencial de Lavanda 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", descLonga:"Óleo essencial de lavanda 100% puro. Calmante, relaxante e cicatrizante. Ideal para insônia, ansiedade e cuidados com a pele.", img:"imagens/oleo_essencial_de_lavanda.png", doencas:["Sono","Relaxamento"], preco:"63,00"},
 {nome:"Óleo Essencial de Limão Siciliano 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", descLonga:"Óleo essencial de limão 100% puro. Antisséptico, antioxidante e energizante. Purifica o ambiente e auxilia na digestão.", img:"imagens/oleo_essencial_de_limao_siciliano.png", doencas:["Imunidade","Digestão"], preco:"43,50"},
 {nome:"Óleo Essencial de Melaleuca 30ml", cat:"Óleos Essenciais", desc:"Óleo essencial 100% puro.", descLonga:"Óleo Essencial de Melaleuca 100% puro, com ação antisséptica, antifúngica e antiviral. Ideal para pele, aromaterapia e fortalecer a imunidade.", img:"imagens/oleo_essencial_de_melaleuca.png", doencas:["Pele","Imunidade"], preco:"50,25"},
-{nome:"Própolis Verde 70% 30ml", cat:"Extratos", desc:"Extrato de própolis verde, não alcoólico.",
+{nome:"Própolis Verde 70% 30ml", cat:"Extratos", desc:"Extrato de própolis verde, não alcoólico.", descLonga:"Ingredientes: Água destilada e própolis verde em natura. Atributos: anti-inflamatório, imunomodulador, anti bactericida, antiviral, antifúngico, anticancerígeno e anti-influenza.", img:"imagens/propolis_verde.png", doencas:["Imunidade","Garganta"], preco:"36,00"},
+{nome:"Quitoco 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Problemas de hemorragias durante a menstruação. Corrimento vaginal. Ciclo menstrual irregular.", img:"imagens/quitoco.png", doencas:["Estômago","Digestão"], preco:"33,75"},
+{nome:"Salsaparrilha 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Artrites (anti-inflamatório). Gota (ajuda eliminar o ácido úrico). Câncer de Mama. Doença venérea. Má circulação com pés frios. Combate herpes.", img:"imagens/salsa_parrilha.png", doencas:["Pele","Rins"], preco:"33,75"},
+{nome:"Sérum Facial Regenerador 30ml", cat:"Cuidados", desc:"Sérum facial regenerador.", descLonga:"Sérum facial regenerador com ingredientes naturais. Hidrata, nutre e auxilia na regeneração da pele.", img:"imagens/serum_facial.png", doencas:["Pele"], preco:"36,00"},
+{nome:"Sucupira 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Diminui a inflamação nas articulações, utilizada para tratar artrite, artrose, reumatismo e artrite reumatoide. Ajuda a cicatrizar feridas na pele, dermatoses, eczemas, manchas de pele, úlceras, urticaria. Pode exercer ação anticancerígena, principalmente no caso do câncer de próstata e de fígado. Alivia dores causada por problemas como excesso de ácido úrico e inflamações. Tônico na debilidade e fraqueza geral.", img:"imagens/sucupira.png", doencas:["Anti-inflamatório","Dores"], preco:"33,75"},
+{nome:"Tansagem 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Anti-inflamatório. Cicatrizante. Expectorante. Estomatite. Laringite. Bronquite. Asma. Aftas e brotoejas em crianças.", img:"imagens/tansagem.png", doencas:["Respiratório","Intestino"], preco:"33,75"},
+{nome:"Tribulus Terrestre e Maca Peruana 30ml", cat:"Extratos", desc:"Extrato fitoterápico combinado, não alcoólico.", descLonga:"Um composto feito de 2 plantas, que atualmente estão se mostrando muito eficazes no tratamento da impotência e falta de libido masculina ou feminina. Nutre o corpo e contribui para o aumento da energia e do vigor físico, combatendo sintomas de cansaço, fadiga e falta de concentração.", img:"imagens/tribulus_e_maca.png", doencas:["Energia","Masculino"], preco:"33,75"},
+{nome:"Unha de Gato 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Uncaria tomentosa, não alcoólico.", descLonga:"Possui efeito vasodilatador (tratamento de hipertensão), imunostimulante aumentando a produção de glóbulos brancos.", img:"imagens/unha_de_gato.png", doencas:["Imunidade","Anti-inflamatório"], preco:"33,75"},
+{nome:"Uxi Amarelo 30ml", cat:"Extratos", desc:"Extrato fitoterápico, não alcoólico.", descLonga:"Miomas. Cistos ovarianos. Endometriose. Infecções urinárias. Doenças reumatológicas. Diabetes. Gastrite. Colesterol alto.", img:"imagens/uxi_amarelo.png", doencas:["Feminino","Intestino"], preco:"33,75"},
+{nome:"Valeriana 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Valeriana officinalis, não alcoólico.", descLonga:"Entre inúmeros benefícios, a valeriana promove o sono, reduz a ansiedade, diminui os desconfortos da menopausa e atua como calmante natural.", img:"imagens/valeriana.png", doencas:["Sono","Ansiedade"], preco:"33,75"},
+{nome:"Vitex 30ml", cat:"Extratos", desc:"Extrato fitoterápico de Vitex agnus-castus, não alcoólico.", descLonga:"Diminui os desconfortos da menopausa. Tensão pré-menstrual. Reduz a ansiedade. Aumenta a fertilidade. Regulador hormonal feminino.", img:"imagens/vitex.png", doencas:["Feminino","Hormônios"], preco:"43,50"}
+];
+let ordem = '';
+let tipoAtivo = '';
+let doencaAtiva = '';
+let carrinho = {};
+const grid = document.getElementById('grid');
+const busca = document.getElementById('busca');
+const vazio = document.getElementById('vazio');
+const filtroToggle = document.getElementById('filtroToggle');
+const filtroPainel = document.getElementById('filtroPainel');
+const filtroOrdem = document.getElementById('filtroOrdem');
+const filtroTipo = document.getElementById('filtroTipo');
+const filtroDoenca = document.getElementById('filtroDoenca');
+const filtroLimpar = document.getElementById('filtroLimpar');
+const cartFab = document.getElementById('cartFab');
+const cartBadge = document.getElementById('cartBadge');
+const cartOverlay = document.getElementById('cartOverlay');
+const cartPanel = document.getElementById('cartPanel');
+const cartClose = document.getElementById('cartClose');
+const cartItems = document.getElementById('cartItems');
+const cartTotal = document.getElementById('cartTotal');
+const cartCheckout = document.getElementById('cartCheckout');
+const toast = document.getElementById('toast');
+const modalOverlay = document.getElementById('modalOverlay');
+const modalImg = document.getElementById('modalImg');
+const modalCat = document.getElementById('modalCat');
+const modalNome = document.getElementById('modalNome');
+const modalPreco = document.getElementById('modalPreco');
+const modalDesc = document.getElementById('modalDesc');
+const modalDescBtn = document.getElementById('modalDescBtn');
+const modalDoencas = document.getElementById('modalDoencas');
+const modalAdd = document.getElementById('modalAdd');
+const modalWhats = document.getElementById('modalWhats');
+const modalFechar = document.getElementById('modalFechar');
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('.btn, .f-opcao, .filtro-toggle, .cart-checkout');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height);
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size + 'px';
+  ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+  ripple.style.top = (e.clientY - rect.top - size/2) + 'px';
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 500);
+});
+let toastTimer;
+function mostrarToast(msg){
+  toast.textContent = msg;
+  toast.classList.add('mostrar');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove('mostrar'), 1800);
+}
+const categorias = [...new Set(produtos.map(p => p.cat))];
+categorias.forEach(cat => {
+  const b = document.createElement('button');
+  b.className = 'f-opcao';
+  b.textContent = cat;
+  b.dataset.tipo = cat;
+  b.onclick = () => { tipoAtivo = (tipoAtivo === cat) ? '' : cat; atualizarAtivos(); render(); };
+  filtroTipo.appendChild(b);
+});
+const doencas = [...new Set(produtos.flatMap(p => p.doencas))].sort();
+doencas.forEach(d => {
+  const b = document.createElement('button');
+  b.className = 'f-opcao';
+  b.textContent = d;
+  b.dataset.doenca = d;
+  b.onclick = () => { doencaAtiva = (doencaAtiva === d) ? '' : d; atualizarAtivos(); render(); };
+  filtroDoenca.appendChild(b);
+});
+filtroOrdem.querySelectorAll('.f-opcao').forEach(b => {
+  b.onclick = () => { ordem = (ordem === b.dataset.ordem) ? '' : b.dataset.ordem; atualizarAtivos(); render(); };
+});
+filtroToggle.onclick = () => filtroPainel.classList.toggle('aberto');
+filtroLimpar.onclick = () => { ordem = ''; tipoAtivo = ''; doencaAtiva = ''; atualizarAtivos(); render(); };
+function atualizarAtivos(){
+  filtroOrdem.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.ordem === ordem));
+  filtroTipo.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.tipo === tipoAtivo));
+  filtroDoenca.querySelectorAll('.f-opcao').forEach(b => b.classList.toggle('ativo', b.dataset.doenca === doencaAtiva));
+}
+function render(){
+  const termo = busca.value.toLowerCase();
+  let lista = produtos.filter(p =>
+    (!termo || p.nome.toLowerCase().includes(termo) || p.desc.toLowerCase().includes(termo)) &&
+    (!tipoAtivo || p.cat === tipoAtivo) &&
+    (!doencaAtiva || p.doencas.includes(doencaAtiva))
+  );
+  if(ordem === 'az') lista = [...lista].sort((a,b) => a.nome.localeCompare(b.nome, 'pt'));
+  if(ordem === 'za') lista = [...lista].sort((a,b) => b.nome.localeCompare(a.nome, 'pt'));
+  grid.innerHTML = lista.map((p, i) => {
+    const idx = produtos.indexOf(p);
+    return `<div class="card" style="animation-delay:${Math.min(i*0.05,0.5)}s" onclick="abrirModal(${idx})">
+      <div class="img-wrap"><img src="${p.img}" alt="${p.nome}" loading="lazy"><span class="cat-badge">${p.cat}</span></div>
+      <div class="info">
+        <h3>${p.nome}</h3>
+        <div class="doencas">${p.doencas.map(d => `<span class="doenca-tag">${d}</span>`).join('')}</div>
+        <div class="preco-card">R$ ${p.preco}</div>
+        <p>${p.desc}</p>
+        <div class="botoes" onclick="event.stopPropagation()">
+          <button class="btn btn-add" onclick="adicionar(${idx})">+ Adicionar</button>
+          <a class="btn btn1" target="_blank" href="https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Olá! Tenho interesse no produto: ' + p.nome)}">WhatsApp</a>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  vazio.style.display = lista.length ? 'none' : 'block';
+}
+let modalIdx = null;
+function abrirModal(idx){
+  modalIdx = idx;
+  const p = produtos[idx];
+  modalImg.src = p.img;
+  modalImg.alt = p.nome;
+  modalCat.textContent = p.cat;
+  modalNome.textContent = p.nome;
+  modalPreco.textContent = 'R$ ' + p.preco;
+  modalDesc.textContent = p.descLonga || p.desc;
+  modalDesc.classList.remove('aberto');
+  modalDescBtn.textContent = 'Ver descrição completa ▾';
+  modalDoencas.innerHTML = p.doencas.map(d => `<span class="doenca-tag">${d}</span>`).join('');
+  modalWhats.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent('Olá! Tenho interesse no produto: ' + p.nome)}`;
+  modalOverlay.classList.add('aberto');
+  document.body.style.overflow = 'hidden';
+}
+function fecharModal(){
+  modalOverlay.classList.remove('aberto');
+  document.body.style.overflow = '';
+}
+modalFechar.onclick = fecharModal;
+modalOverlay.onclick = (e) => { if(e.target === modalOverlay) fecharModal(); };
+modalDescBtn.onclick = () => {
+  const aberto = modalDesc.classList.toggle('aberto');
+  modalDescBtn.textContent = aberto ? 'Ocultar descrição ▴' : 'Ver descrição completa ▾';
+};
+modalAdd.onclick = () => { if(modalIdx !== null){ adicionar(modalIdx); fecharModal(); } };
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape') fecharModal(); });
+function adicionar(i){
+  carrinho[i] = (carrinho[i] || 0) + 1;
+  atualizarCarrinho();
+  cartBadge.classList.remove('pula');
+  void cartBadge.offsetWidth;
+  cartBadge.classList.add('pula');
+  mostrarToast('✅ ' + produtos[i].nome + ' adicionado!');
+}
+function atualizarCarrinho(){
+  const totalItens = Object.values(carrinho).reduce((a,b) => a+b, 0);
+  cartBadge.textContent = totalItens;
+  cartCheckout.disabled = totalItens === 0;
+  renderCarrinho();
+}
+function renderCarrinho(){
+  const chaves = Object.keys(carrinho);
+  if(chaves.length === 0){
+    cartItems.innerHTML = '<div class="cart-vazio">Seu carrinho está vazio.<br>Adicione produtos para começar 🌿</div>';
+    cartTotal.textContent = '0';
+    return;
+  }
+  cartItems.innerHTML = chaves.map(i => {
+    const p = produtos[i];
+    const qtd = carrinho[i];
+    return `<div class="cart-item">
+      <img src="${p.img}" alt="${p.nome}">
+      <div class="ci-info">
+        <div class="ci-nome">${p.nome}</div>
+        <div class="ci-qtd"><button onclick="mudarQtd(${i},-1)">−</button><span>${qtd}</span><button onclick="mudarQtd(${i},1)">+</button></div>
+      </div>
+      <button class="ci-remove" onclick="remover(${i})">🗑</button>
+    </div>`;
+  }).join('');
+  cartTotal.textContent = Object.values(carrinho).reduce((a,b) => a+b, 0);
+}
+function mudarQtd(i, delta){
+  carrinho[i] = (carrinho[i] || 0) + delta;
+  if(carrinho[i] <= 0) delete carrinho[i];
+  atualizarCarrinho();
+}
+function remover(i){
+  delete carrinho[i];
+  atualizarCarrinho();
+}
+function montarMensagem(){
+  const linhas = Object.keys(carrinho).map(i => {
+    const p = produtos[i];
+    const qtd = carrinho[i];
+    return qtd > 1 ? `${qtd}x ${p.nome}` : `1x ${p.nome}`;
+  });
+  return 'Olá! Gostaria de fazer um pedido:\n\n' + linhas.join('\n') + '\n\nPoderia me confirmar a disponibilidade?';
+}
+function finalizar(){
+  if(Object.keys(carrinho).length === 0) return;
+  const msg = encodeURIComponent(montarMensagem());
+  window.open(`https://wa.me/${WHATSAPP}?text=${msg}`, '_blank');
+  carrinho = {};
+  atualizarCarrinho();
+  fecharCarrinho();
+}
+function abrirCarrinho(){ cartPanel.classList.add('aberto'); cartOverlay.classList.add('aberto'); renderCarrinho(); }
+function fecharCarrinho(){ cartPanel.classList.remove('aberto'); cartOverlay.classList.remove('aberto'); }
+cartFab.onclick = abrirCarrinho;
+cartClose.onclick = fecharCarrinho;
+cartOverlay.onclick = fecharCarrinho;
+cartCheckout.onclick = finalizar;
+busca.addEventListener('input', render);
+render();
+atualizarCarrinho();
+</script>
+</body>
+</html>
