@@ -154,6 +154,7 @@ Cotara — Produtos Naturais · Peça pelo WhatsApp e receba em casa 🌿
 <div class="cart-itens" id="cartItens"></div>
 <div class="cart-foot">
 <div class="cart-total"><span>Total de itens</span><span id="cartTotal">0</span></div>
+<div class="cart-total"><span>Total</span><span id="cartTotalValor">R$ 0,00</span></div>
 <button class="cart-checkout" id="cartCheckout" disabled>Finalizar pedido no WhatsApp</button>
 </div>
 </aside>
@@ -410,6 +411,7 @@ function renderCarrinho(){
 const chaves = Object.keys(carrinho);
 if(chaves.length === 0){
 cartItens.innerHTML = '<div class="cart-vazio">Seu carrinho está vazio.</div>';
+cartTotalValor.textContent = 'R$ 0,00';
 cartTotal.textContent = '0';
 return;
 }
@@ -430,6 +432,8 @@ return `<div class="cart-item">
 </div>`;
 }).join('');
 cartTotal.textContent = chaves.reduce((a,i) => a + carrinho[i], 0);
+const totalValor = chaves.reduce((soma, i) => soma + (parseFloat(produtos[i].preco.replace(',', '.')) * carrinho[i]), 0);
+cartTotalValor.textContent = 'R$ ' + totalValor.toFixed(2).replace('.', ',');
 }
 function montarMensagem(){
 const linhas = Object.keys(carrinho).map(i => {
